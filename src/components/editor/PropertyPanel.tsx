@@ -46,13 +46,18 @@ function SmallInput({ value, onChange, type = 'text', min, max, step, placeholde
   );
 }
 
-function DeferredInput({ value, onCommit, placeholder }: { value: string; onCommit: (val: string) => void; placeholder?: string }) {
+function DeferredInput({ value, onCommit, placeholder, autoUnit }: { value: string; onCommit: (val: string) => void; placeholder?: string; autoUnit?: boolean }) {
   const [draft, setDraft] = useState(value);
 
   useEffect(() => { setDraft(value); }, [value]);
 
   const commit = () => {
-    if (draft !== value) onCommit(draft);
+    let v = draft.trim();
+    if (autoUnit && v && /^\d+(\.\d+)?$/.test(v)) {
+      v += 'px';
+    }
+    if (v !== value) onCommit(v);
+    setDraft(v);
   };
 
   return (
@@ -165,19 +170,19 @@ function ContainerTab() {
       <SectionLabel>サイズ</SectionLabel>
       <div className="text-[10px] text-blue-500 mb-1">現在: {activeLabel}</div>
       <FieldRow label="幅 (desktop)">
-        <DeferredInput value={c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, desktop: v } })} />
+        <DeferredInput value={c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, desktop: v } })} autoUnit />
       </FieldRow>
       <FieldRow label="幅 (tablet)">
-        <DeferredInput value={c.width.tablet ?? c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, tablet: v } })} />
+        <DeferredInput value={c.width.tablet ?? c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, tablet: v } })} autoUnit />
       </FieldRow>
       <FieldRow label="幅 (mobile)">
-        <DeferredInput value={c.width.mobile} onCommit={(v) => updateContainer({ width: { ...c.width, mobile: v } })} />
+        <DeferredInput value={c.width.mobile} onCommit={(v) => updateContainer({ width: { ...c.width, mobile: v } })} autoUnit />
       </FieldRow>
       <FieldRow label="高さ (desktop)">
-        <DeferredInput value={c.height.desktop} onCommit={(v) => updateContainer({ height: { ...c.height, desktop: v } })} />
+        <DeferredInput value={c.height.desktop} onCommit={(v) => updateContainer({ height: { ...c.height, desktop: v } })} autoUnit />
       </FieldRow>
       <FieldRow label="高さ (mobile)">
-        <DeferredInput value={c.height.mobile} onCommit={(v) => updateContainer({ height: { ...c.height, mobile: v } })} />
+        <DeferredInput value={c.height.mobile} onCommit={(v) => updateContainer({ height: { ...c.height, mobile: v } })} autoUnit />
       </FieldRow>
 
       <SectionLabel>位置</SectionLabel>
