@@ -1,4 +1,4 @@
-import type { PopupConfig, PopupElement, BoxElement, CarouselElement, FormElement } from '../types/popup';
+import type { PopupConfig, PopupElement, BoxElement, CarouselElement, FormElement, NpsElement } from '../types/popup';
 
 export function generateDOM(config: PopupConfig, prefix: string): string {
   const lines: string[] = [];
@@ -228,6 +228,61 @@ ${indent}})();`);
       lines.push(`${indent}var ${varName}_submit = document.createElement('button');`);
       lines.push(`${indent}${varName}_submit.type = 'submit';`);
       lines.push(`${indent}${varName}_submit.textContent = ${JSON.stringify(form.submitLabel)};`);
+      lines.push(`${indent}${varName}.appendChild(${varName}_submit);`);
+      break;
+    }
+
+    case 'nps': {
+      const nps = el as NpsElement;
+      lines.push(`${indent}var ${varName} = document.createElement('div');`);
+      lines.push(`${indent}${varName}.className = '${prefix}-el-${el.id}';`);
+
+      // NPS buttons container
+      lines.push(`${indent}var ${varName}_btns = document.createElement('div');`);
+      lines.push(`${indent}${varName}_btns.className = 'nps-buttons';`);
+
+      // Generate buttons
+      lines.push(`${indent}var ${varName}_selected = null;`);
+      lines.push(`${indent}for (var i = ${nps.min}; i <= ${nps.max}; i += ${nps.step}) {`);
+      lines.push(`${indent}  (function(val) {`);
+      lines.push(`${indent}    var btn = document.createElement('button');`);
+      lines.push(`${indent}    btn.type = 'button';`);
+      lines.push(`${indent}    btn.className = 'nps-btn';`);
+      lines.push(`${indent}    btn.textContent = val;`);
+      lines.push(`${indent}    btn.addEventListener('click', function() {`);
+      lines.push(`${indent}      ${varName}_selected = val;`);
+      lines.push(`${indent}      ${varName}_btns.querySelectorAll('.nps-btn').forEach(function(b) { b.className = 'nps-btn'; });`);
+      lines.push(`${indent}      btn.className = 'nps-btn selected';`);
+      lines.push(`${indent}      ${varName}_submit.disabled = false;`);
+      lines.push(`${indent}    });`);
+      lines.push(`${indent}    ${varName}_btns.appendChild(btn);`);
+      lines.push(`${indent}  })(i);`);
+      lines.push(`${indent}}`);
+      lines.push(`${indent}${varName}.appendChild(${varName}_btns);`);
+
+      // Labels row
+      lines.push(`${indent}var ${varName}_labels = document.createElement('div');`);
+      lines.push(`${indent}${varName}_labels.className = 'nps-labels';`);
+      lines.push(`${indent}${varName}_labels.innerHTML = '<span>${nps.min}: 非常に不満</span><span>${nps.max}: 非常に満足</span>';`);
+      lines.push(`${indent}${varName}.appendChild(${varName}_labels);`);
+
+      // Submit button
+      lines.push(`${indent}var ${varName}_submit = document.createElement('button');`);
+      lines.push(`${indent}${varName}_submit.type = 'button';`);
+      lines.push(`${indent}${varName}_submit.className = 'nps-submit';`);
+      lines.push(`${indent}${varName}_submit.textContent = ${JSON.stringify(nps.submitLabel)};`);
+      lines.push(`${indent}${varName}_submit.disabled = true;`);
+      lines.push(`${indent}${varName}_submit.addEventListener('click', function() {`);
+      lines.push(`${indent}  if (${varName}_selected === null) return;`);
+      if (nps.submitUrl) {
+        lines.push(`${indent}  var xhr = new XMLHttpRequest();`);
+        lines.push(`${indent}  xhr.open(${JSON.stringify(nps.submitMethod.toUpperCase())}, ${JSON.stringify(nps.submitUrl)});`);
+        lines.push(`${indent}  xhr.setRequestHeader('Content-Type', 'application/json');`);
+        lines.push(`${indent}  xhr.send(JSON.stringify({ score: ${varName}_selected }));`);
+      }
+      lines.push(`${indent}  ${varName}_submit.textContent = ${JSON.stringify(nps.successMessage)};`);
+      lines.push(`${indent}  setTimeout(function() { ${varName}_submit.textContent = ${JSON.stringify(nps.submitLabel)}; }, 2000);`);
+      lines.push(`${indent}});`);
       lines.push(`${indent}${varName}.appendChild(${varName}_submit);`);
       break;
     }

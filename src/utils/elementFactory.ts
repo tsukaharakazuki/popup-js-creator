@@ -9,6 +9,7 @@ import type {
   BoxElement,
   CarouselElement,
   FormElement,
+  NpsElement,
   HtmlElement,
   ElementType,
 } from '../types/popup';
@@ -151,6 +152,27 @@ export function createFormElement(overrides?: Partial<FormElement>): FormElement
   };
 }
 
+export function createNpsElement(overrides?: Partial<NpsElement>): NpsElement {
+  return {
+    id: nanoid(),
+    type: 'nps',
+    min: 1,
+    max: 10,
+    step: 1,
+    submitLabel: '送信',
+    submitUrl: '',
+    submitMethod: 'post',
+    successMessage: 'ご回答ありがとうございます!',
+    buttonColor: '#e5e7eb',
+    selectedColor: '#3b82f6',
+    textColor: '#374151',
+    selectedTextColor: '#ffffff',
+    margin: { ...defaultSpacing },
+    padding: { ...defaultSpacing },
+    ...overrides,
+  };
+}
+
 export function createHtmlElement(overrides?: Partial<HtmlElement>): HtmlElement {
   return {
     id: nanoid(),
@@ -172,6 +194,7 @@ export function createElement(type: ElementType): PopupElement {
     case 'box': return createBoxElement();
     case 'carousel': return createCarouselElement();
     case 'form': return createFormElement();
+    case 'nps': return createNpsElement();
     case 'html': return createHtmlElement();
   }
 }
@@ -186,6 +209,7 @@ export function getElementLabel(type: ElementType): string {
     box: 'ボックス',
     carousel: 'カルーセル',
     form: 'フォーム',
+    nps: 'NPS',
     html: 'HTML',
   };
   return labels[type];

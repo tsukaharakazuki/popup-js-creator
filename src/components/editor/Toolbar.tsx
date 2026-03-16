@@ -3,7 +3,7 @@ import {
   Undo2, Redo2, Monitor, Tablet, Smartphone,
   ZoomIn, ZoomOut, Plus, Type, Image, MousePointerClick,
   Minus, Square, LayoutGrid, FormInput, Code,
-  GripVertical, FileCode,
+  GripVertical, FileCode, Star,
 } from 'lucide-react';
 import { useEditor } from '../../context/EditorContext';
 import { createElement } from '../../utils/elementFactory';
@@ -21,6 +21,7 @@ const elementTypes: { type: ElementType; icon: typeof Type; label: string }[] = 
   { type: 'box', icon: Square, label: 'ボックス' },
   { type: 'carousel', icon: LayoutGrid, label: 'カルーセル' },
   { type: 'form', icon: FormInput, label: 'フォーム' },
+  { type: 'nps', icon: Star, label: 'NPS' },
   { type: 'html', icon: Code, label: 'HTML' },
 ];
 

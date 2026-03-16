@@ -7,6 +7,7 @@ import SpacerRenderer from './SpacerRenderer';
 import BoxRenderer from './BoxRenderer';
 import CarouselRenderer from './CarouselRenderer';
 import FormRenderer from './FormRenderer';
+import NpsRenderer from './NpsRenderer';
 import HtmlRenderer from './HtmlRenderer';
 
 interface ElementRendererProps {
@@ -50,6 +51,8 @@ function renderElement(
       );
     case 'form':
       return <FormRenderer element={element} />;
+    case 'nps':
+      return <NpsRenderer element={element} />;
     case 'html':
       return <HtmlRenderer element={element} />;
     default:

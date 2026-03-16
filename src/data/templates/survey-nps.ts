@@ -1,19 +1,19 @@
 import type { TemplateDefinition } from '../../types/template';
 import { createDefaultPopupConfig } from '../defaults';
-import { createTextElement, createFormElement } from '../../utils/elementFactory';
+import { createTextElement, createNpsElement } from '../../utils/elementFactory';
 
 const surveyNps: TemplateDefinition = {
   id: 'survey-nps',
   name: 'Survey / NPS',
-  nameJa: 'アンケート',
-  description: 'A compact survey popup with a select field, positioned at bottom-right.',
-  descriptionJa: '画面右下に表示される小さなアンケートポップアップ。',
+  nameJa: 'アンケート / NPS',
+  description: 'A compact NPS survey popup with score buttons, positioned at bottom-right.',
+  descriptionJa: '画面右下に表示されるNPSスコアポップアップ。',
   category: 'feedback',
-  tags: ['survey', 'nps', 'feedback', 'form'],
+  tags: ['survey', 'nps', 'feedback', 'score'],
   create: () => {
-    const config = createDefaultPopupConfig('アンケート');
+    const config = createDefaultPopupConfig('NPS アンケート');
     config.container.position = 'bottom-right';
-    config.container.width = { mobile: '90%', desktop: '320px' };
+    config.container.width = { mobile: '90%', desktop: '380px' };
     config.container.padding = { top: 20, right: 20, bottom: 20, left: 20 };
     config.container.offsetX = 16;
     config.container.offsetY = 16;
@@ -28,36 +28,22 @@ const surveyNps: TemplateDefinition = {
         margin: { top: 0, right: 0, bottom: 4, left: 0 },
       }),
       createTextElement({
-        content: 'このサイトのご利用体験はいかがですか?',
+        content: 'このサイトを友人や同僚にすすめる可能性はどのくらいですか?',
         fontSize: 13,
         color: '#6b7280',
         textAlign: 'left',
-        margin: { top: 0, right: 0, bottom: 16, left: 0 },
+        margin: { top: 0, right: 0, bottom: 12, left: 0 },
       }),
-      createFormElement({
-        fields: [
-          {
-            id: 'field-rating',
-            fieldType: 'select',
-            label: '満足度',
-            name: 'rating',
-            placeholder: '選択してください',
-            required: true,
-            options: ['非常に満足', '満足', '普通', '不満', '非常に不満'],
-          },
-          {
-            id: 'field-comment',
-            fieldType: 'text',
-            label: 'コメント（任意）',
-            name: 'comment',
-            placeholder: 'ご自由にどうぞ',
-            required: false,
-          },
-        ],
+      createNpsElement({
+        min: 1,
+        max: 10,
+        step: 1,
         submitLabel: '送信する',
-        submitUrl: '',
-        submitMethod: 'post',
         successMessage: 'ご回答ありがとうございます!',
+        buttonColor: '#e5e7eb',
+        selectedColor: '#3b82f6',
+        textColor: '#374151',
+        selectedTextColor: '#ffffff',
       }),
     ];
     config.displayRules.trigger = { type: 'delay', delaySeconds: 30 };

@@ -77,6 +77,7 @@ export type PopupElement =
   | BoxElement
   | CarouselElement
   | FormElement
+  | NpsElement
   | HtmlElement;
 
 export type ElementType = PopupElement['type'];
@@ -196,6 +197,21 @@ export interface FormField {
 export interface HtmlElement extends BaseElement {
   type: 'html';
   content: string;
+}
+
+export interface NpsElement extends BaseElement {
+  type: 'nps';
+  min: number;
+  max: number;
+  step: number;
+  submitLabel: string;
+  submitUrl: string;
+  submitMethod: 'post' | 'get';
+  successMessage: string;
+  buttonColor: string;
+  selectedColor: string;
+  textColor: string;
+  selectedTextColor: string;
 }
 
 // ========================================

@@ -6,7 +6,7 @@ import { createImageElement } from '../../utils/elementFactory';
 import type {
   PopupConfig, PopupPosition, TextElement, ImageElement, ButtonElement,
   DividerElement, SpacerElement, BoxElement, CarouselElement, FormElement,
-  HtmlElement, SpacingConfig, FormField,
+  NpsElement, HtmlElement, SpacingConfig, FormField,
 } from '../../types/popup';
 
 type Tab = 'container' | 'element' | 'display';
@@ -262,6 +262,7 @@ function ElementTab() {
       {el.type === 'box' && <BoxFields element={el} update={update} />}
       {el.type === 'carousel' && <CarouselFields element={el} update={update} />}
       {el.type === 'form' && <FormFields element={el} update={update} />}
+      {el.type === 'nps' && <NpsFields element={el} update={update} />}
       {el.type === 'html' && <HtmlFields element={el} update={update} />}
     </div>
   );
@@ -680,6 +681,54 @@ function FormFields({ element: el, update }: { element: FormElement; update: (u:
           </div>
         ))}
       </div>
+    </>
+  );
+}
+
+function NpsFields({ element: el, update }: { element: NpsElement; update: (u: Record<string, unknown>) => void }) {
+  return (
+    <>
+      <SectionLabel>NPS設定</SectionLabel>
+      <FieldRow label="最小値">
+        <SmallInput type="number" value={el.min} onChange={(v) => update({ min: parseInt(v) || 0 })} />
+      </FieldRow>
+      <FieldRow label="最大値">
+        <SmallInput type="number" value={el.max} onChange={(v) => update({ max: parseInt(v) || 10 })} />
+      </FieldRow>
+      <FieldRow label="区切り">
+        <SmallInput type="number" value={el.step} onChange={(v) => update({ step: parseInt(v) || 1 })} min={1} />
+      </FieldRow>
+
+      <SectionLabel>ボタンカラー</SectionLabel>
+      <FieldRow label="通常色">
+        <ColorInput value={el.buttonColor} onChange={(v) => update({ buttonColor: v })} />
+      </FieldRow>
+      <FieldRow label="選択色">
+        <ColorInput value={el.selectedColor} onChange={(v) => update({ selectedColor: v })} />
+      </FieldRow>
+      <FieldRow label="文字色">
+        <ColorInput value={el.textColor} onChange={(v) => update({ textColor: v })} />
+      </FieldRow>
+      <FieldRow label="選択文字色">
+        <ColorInput value={el.selectedTextColor} onChange={(v) => update({ selectedTextColor: v })} />
+      </FieldRow>
+
+      <SectionLabel>送信設定</SectionLabel>
+      <FieldRow label="送信ボタン">
+        <SmallInput value={el.submitLabel} onChange={(v) => update({ submitLabel: v })} />
+      </FieldRow>
+      <FieldRow label="送信先URL">
+        <SmallInput value={el.submitUrl} onChange={(v) => update({ submitUrl: v })} />
+      </FieldRow>
+      <FieldRow label="メソッド">
+        <SmallSelect value={el.submitMethod} onChange={(v) => update({ submitMethod: v })}>
+          <option value="post">POST</option>
+          <option value="get">GET</option>
+        </SmallSelect>
+      </FieldRow>
+      <FieldRow label="成功メッセージ">
+        <SmallInput value={el.successMessage} onChange={(v) => update({ successMessage: v })} />
+      </FieldRow>
     </>
   );
 }

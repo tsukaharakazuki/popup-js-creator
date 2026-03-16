@@ -169,6 +169,14 @@ function generateElementCSS(el: PopupElement, prefix: string): string {
 .${prefix}-el-${el.id} label { display: block; margin-bottom: 4px; font-size: 14px; font-weight: 500; }
 .${prefix}-el-${el.id} input, .${prefix}-el-${el.id} select { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; box-sizing: border-box; margin-bottom: 12px; }
 .${prefix}-el-${el.id} button[type="submit"] { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }`;
+    case 'nps':
+      return `.${prefix}-el-${el.id} { ${base} display: flex; flex-direction: column; gap: 12px; }
+.${prefix}-el-${el.id} .nps-buttons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.${prefix}-el-${el.id} .nps-btn { width: 36px; height: 36px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; background: ${el.buttonColor}; color: ${el.textColor}; transition: background-color 0.15s, color 0.15s; }
+.${prefix}-el-${el.id} .nps-btn.selected { background: ${el.selectedColor}; color: ${el.selectedTextColor}; }
+.${prefix}-el-${el.id} .nps-labels { display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; }
+.${prefix}-el-${el.id} .nps-submit { width: 100%; padding: 10px; background: ${el.selectedColor}; color: ${el.selectedTextColor}; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.${prefix}-el-${el.id} .nps-submit:disabled { opacity: 0.5; cursor: not-allowed; }`;
     case 'html':
       return `.${prefix}-el-${el.id} { ${base} }`;
     default:
