@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Plus, Trash2, ChevronDown, ChevronUp, Play } from 'lucide-react';
 import { useEditor } from '../../context/EditorContext';
@@ -42,6 +42,28 @@ function SmallInput({ value, onChange, type = 'text', min, max, step, placeholde
       step={step}
       placeholder={placeholder}
       disabled={disabled}
+    />
+  );
+}
+
+function DeferredInput({ value, onCommit, placeholder }: { value: string; onCommit: (val: string) => void; placeholder?: string }) {
+  const [draft, setDraft] = useState(value);
+
+  useEffect(() => { setDraft(value); }, [value]);
+
+  const commit = () => {
+    if (draft !== value) onCommit(draft);
+  };
+
+  return (
+    <input
+      type="text"
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === 'Enter') { commit(); (e.target as HTMLInputElement).blur(); } }}
+      className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white"
+      placeholder={placeholder}
     />
   );
 }
@@ -143,19 +165,19 @@ function ContainerTab() {
       <SectionLabel>サイズ</SectionLabel>
       <div className="text-[10px] text-blue-500 mb-1">現在: {activeLabel}</div>
       <FieldRow label="幅 (desktop)">
-        <SmallInput value={c.width.desktop} onChange={(v) => updateContainer({ width: { ...c.width, desktop: v } })} />
+        <DeferredInput value={c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, desktop: v } })} />
       </FieldRow>
       <FieldRow label="幅 (tablet)">
-        <SmallInput value={c.width.tablet ?? c.width.desktop} onChange={(v) => updateContainer({ width: { ...c.width, tablet: v } })} />
+        <DeferredInput value={c.width.tablet ?? c.width.desktop} onCommit={(v) => updateContainer({ width: { ...c.width, tablet: v } })} />
       </FieldRow>
       <FieldRow label="幅 (mobile)">
-        <SmallInput value={c.width.mobile} onChange={(v) => updateContainer({ width: { ...c.width, mobile: v } })} />
+        <DeferredInput value={c.width.mobile} onCommit={(v) => updateContainer({ width: { ...c.width, mobile: v } })} />
       </FieldRow>
       <FieldRow label="高さ (desktop)">
-        <SmallInput value={c.height.desktop} onChange={(v) => updateContainer({ height: { ...c.height, desktop: v } })} />
+        <DeferredInput value={c.height.desktop} onCommit={(v) => updateContainer({ height: { ...c.height, desktop: v } })} />
       </FieldRow>
       <FieldRow label="高さ (mobile)">
-        <SmallInput value={c.height.mobile} onChange={(v) => updateContainer({ height: { ...c.height, mobile: v } })} />
+        <DeferredInput value={c.height.mobile} onCommit={(v) => updateContainer({ height: { ...c.height, mobile: v } })} />
       </FieldRow>
 
       <SectionLabel>位置</SectionLabel>
