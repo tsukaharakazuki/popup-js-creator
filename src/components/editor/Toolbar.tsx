@@ -3,12 +3,13 @@ import {
   Undo2, Redo2, Monitor, Tablet, Smartphone,
   ZoomIn, ZoomOut, Plus, Type, Image, MousePointerClick,
   Minus, Square, LayoutGrid, FormInput, Code,
-  GripVertical,
+  GripVertical, FileCode,
 } from 'lucide-react';
 import { useEditor } from '../../context/EditorContext';
 import { createElement } from '../../utils/elementFactory';
 import type { ElementType } from '../../types/popup';
 import type { PreviewDevice } from '../../types/editor';
+import CodeExportModal from './CodeExportModal';
 
 const elementTypes: { type: ElementType; icon: typeof Type; label: string }[] = [
   { type: 'text', icon: Type, label: 'テキスト' },
@@ -31,6 +32,7 @@ const devices: { device: PreviewDevice; icon: typeof Monitor; label: string }[] 
 export default function Toolbar() {
   const { state, dispatch, canUndo, canRedo } = useEditor();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [codeModalOpen, setCodeModalOpen] = useState(false);
 
   const handleAddElement = (type: ElementType) => {
     const element = createElement(type);
@@ -102,6 +104,18 @@ export default function Toolbar() {
 
       <div className="flex-1" />
 
+      {/* Export JS */}
+      <button
+        onClick={() => setCodeModalOpen(true)}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+        title="JavaScript コードを出力"
+      >
+        <FileCode className="w-4 h-4" />
+        JS出力
+      </button>
+
+      <div className="w-px h-6 bg-gray-200 mx-1" />
+
       {/* Add Element */}
       <div className="relative">
         <button
@@ -132,6 +146,14 @@ export default function Toolbar() {
           </>
         )}
       </div>
+
+      {/* Code Export Modal */}
+      {codeModalOpen && (
+        <CodeExportModal
+          config={state.popup}
+          onClose={() => setCodeModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
