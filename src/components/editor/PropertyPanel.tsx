@@ -130,22 +130,32 @@ function PositionGrid({ value, onChange }: { value: PopupPosition; onChange: (v:
 function ContainerTab() {
   const { state, dispatch } = useEditor();
   const c = state.popup.container;
+  const device = state.previewDevice;
 
   const updateContainer = (updates: Partial<PopupConfig['container']>) => {
     dispatch({ type: 'UPDATE_CONTAINER', updates });
   };
 
+  const activeLabel = device === 'mobile' ? 'モバイル' : device === 'tablet' ? 'タブレット' : 'デスクトップ';
+
   return (
     <div>
       <SectionLabel>サイズ</SectionLabel>
+      <div className="text-[10px] text-blue-500 mb-1">現在: {activeLabel}</div>
       <FieldRow label="幅 (desktop)">
         <SmallInput value={c.width.desktop} onChange={(v) => updateContainer({ width: { ...c.width, desktop: v } })} />
+      </FieldRow>
+      <FieldRow label="幅 (tablet)">
+        <SmallInput value={c.width.tablet ?? c.width.desktop} onChange={(v) => updateContainer({ width: { ...c.width, tablet: v } })} />
       </FieldRow>
       <FieldRow label="幅 (mobile)">
         <SmallInput value={c.width.mobile} onChange={(v) => updateContainer({ width: { ...c.width, mobile: v } })} />
       </FieldRow>
       <FieldRow label="高さ (desktop)">
         <SmallInput value={c.height.desktop} onChange={(v) => updateContainer({ height: { ...c.height, desktop: v } })} />
+      </FieldRow>
+      <FieldRow label="高さ (mobile)">
+        <SmallInput value={c.height.mobile} onChange={(v) => updateContainer({ height: { ...c.height, mobile: v } })} />
       </FieldRow>
 
       <SectionLabel>位置</SectionLabel>

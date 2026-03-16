@@ -44,9 +44,10 @@ export default function PopupRenderer({ config, previewDevice = 'desktop', selec
   const containerStyle: React.CSSProperties = {
     position: 'relative',
     width,
-    maxWidth: maxWidth || undefined,
+    maxWidth: maxWidth || '100%',
     height,
     maxHeight: maxHeight || undefined,
+    flexShrink: 0,
     backgroundColor: container.backgroundColor,
     backgroundImage: container.backgroundImage ? `url(${container.backgroundImage})` : undefined,
     backgroundSize: container.backgroundSize || undefined,
