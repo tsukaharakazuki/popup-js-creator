@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { nanoid } from 'nanoid';
+import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useEditor } from '../../context/EditorContext';
+import { createImageElement } from '../../utils/elementFactory';
 import type {
   PopupConfig, PopupPosition, TextElement, ImageElement, ButtonElement,
   DividerElement, SpacerElement, BoxElement, CarouselElement, FormElement,
-  HtmlElement, SpacingConfig,
+  HtmlElement, SpacingConfig, FormField,
 } from '../../types/popup';
 
 type Tab = 'container' | 'element' | 'display';
@@ -317,6 +320,17 @@ function ImageFields({ element: el, update }: { element: ImageElement; update: (
           <option value="right">右</option>
         </SmallSelect>
       </FieldRow>
+
+      <SectionLabel>リンク設定</SectionLabel>
+      <FieldRow label="リンクURL">
+        <SmallInput value={el.linkUrl || ''} onChange={(v) => update({ linkUrl: v || undefined })} placeholder="https://..." />
+      </FieldRow>
+      <FieldRow label="ターゲット">
+        <SmallSelect value={el.linkTarget || '_blank'} onChange={(v) => update({ linkTarget: v })}>
+          <option value="_blank">新しいタブ</option>
+          <option value="_self">同じタブ</option>
+        </SmallSelect>
+      </FieldRow>
     </>
   );
 }
@@ -443,6 +457,17 @@ function BoxFields({ element: el, update }: { element: BoxElement; update: (u: R
 }
 
 function CarouselFields({ element: el, update }: { element: CarouselElement; update: (u: Record<string, unknown>) => void }) {
+  const addSlide = () => {
+    if (el.slides.length >= 20) return;
+    const newSlide = { id: nanoid(), elements: [createImageElement()] };
+    update({ slides: [...el.slides, newSlide] });
+  };
+
+  const removeSlide = (index: number) => {
+    if (el.slides.length <= 1) return;
+    update({ slides: el.slides.filter((_, i) => i !== index) });
+  };
+
   return (
     <>
       <SectionLabel>カルーセル</SectionLabel>
@@ -467,14 +492,72 @@ function CarouselFields({ element: el, update }: { element: CarouselElement; upd
           表示
         </label>
       </FieldRow>
-      <div className="text-xs text-gray-400 mt-2">
-        スライド数: {el.slides.length}
+
+      <SectionLabel>スライド管理</SectionLabel>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-gray-600">スライド数: {el.slides.length} / 20</span>
+        <button
+          type="button"
+          onClick={addSlide}
+          disabled={el.slides.length >= 20}
+          className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <Plus className="w-3 h-3" />
+          追加
+        </button>
+      </div>
+      <div className="space-y-1">
+        {el.slides.map((slide, i) => (
+          <div key={slide.id} className="flex items-center gap-1 px-2 py-1.5 bg-gray-50 rounded border border-gray-200 text-xs">
+            <span className="flex-1 text-gray-700">スライド {i + 1}</span>
+            <button
+              type="button"
+              onClick={() => removeSlide(i)}
+              disabled={el.slides.length <= 1}
+              className="p-0.5 text-gray-400 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              title="削除"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          </div>
+        ))}
       </div>
     </>
   );
 }
 
 function FormFields({ element: el, update }: { element: FormElement; update: (u: Record<string, unknown>) => void }) {
+  const [expandedFieldId, setExpandedFieldId] = useState<string | null>(null);
+
+  const addField = () => {
+    const newField: FormField = {
+      id: nanoid(),
+      fieldType: 'text',
+      label: `質問 ${el.fields.length + 1}`,
+      name: `field_${el.fields.length + 1}`,
+      placeholder: '',
+      required: false,
+    };
+    update({ fields: [...el.fields, newField] });
+  };
+
+  const removeField = (index: number) => {
+    update({ fields: el.fields.filter((_, i) => i !== index) });
+  };
+
+  const updateField = (index: number, fieldUpdates: Partial<FormField>) => {
+    const newFields = el.fields.map((f, i) => i === index ? { ...f, ...fieldUpdates } : f);
+    update({ fields: newFields });
+  };
+
+  const moveField = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= el.fields.length) return;
+    const newFields = [...el.fields];
+    [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
+    update({ fields: newFields });
+  };
+
   return (
     <>
       <SectionLabel>フォーム</SectionLabel>
@@ -493,8 +576,78 @@ function FormFields({ element: el, update }: { element: FormElement; update: (u:
       <FieldRow label="成功メッセージ">
         <SmallInput value={el.successMessage} onChange={(v) => update({ successMessage: v })} />
       </FieldRow>
-      <div className="text-xs text-gray-400 mt-2">
-        フィールド数: {el.fields.length}
+
+      <SectionLabel>フィールド管理</SectionLabel>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-gray-600">フィールド数: {el.fields.length}</span>
+        <button
+          type="button"
+          onClick={addField}
+          className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          <Plus className="w-3 h-3" />
+          追加
+        </button>
+      </div>
+      <div className="space-y-1">
+        {el.fields.map((field, i) => (
+          <div key={field.id} className="border border-gray-200 rounded bg-gray-50">
+            <div
+              className="flex items-center gap-1 px-2 py-1.5 cursor-pointer"
+              onClick={() => setExpandedFieldId(expandedFieldId === field.id ? null : field.id)}
+            >
+              {expandedFieldId === field.id ? <ChevronUp className="w-3 h-3 text-gray-400" /> : <ChevronDown className="w-3 h-3 text-gray-400" />}
+              <span className="flex-1 text-xs text-gray-700 truncate">{field.label || `フィールド ${i + 1}`}</span>
+              <button type="button" onClick={(e) => { e.stopPropagation(); moveField(i, -1); }} disabled={i === 0} className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30"><ChevronUp className="w-3 h-3" /></button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); moveField(i, 1); }} disabled={i === el.fields.length - 1} className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30"><ChevronDown className="w-3 h-3" /></button>
+              <button type="button" onClick={(e) => { e.stopPropagation(); removeField(i); }} className="p-0.5 text-gray-400 hover:text-red-500" title="削除"><Trash2 className="w-3 h-3" /></button>
+            </div>
+            {expandedFieldId === field.id && (
+              <div className="px-2 pb-2 space-y-1.5 border-t border-gray-200 pt-1.5">
+                <div>
+                  <label className="text-[10px] text-gray-500">ラベル（質問タイトル）</label>
+                  <input type="text" value={field.label} onChange={(e) => updateField(i, { label: e.target.value })} className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gray-500">フィールド名 (name属性)</label>
+                  <input type="text" value={field.name} onChange={(e) => updateField(i, { name: e.target.value })} className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gray-500">種類</label>
+                  <select value={field.fieldType} onChange={(e) => updateField(i, { fieldType: e.target.value as FormField['fieldType'] })} className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white">
+                    <option value="text">テキスト</option>
+                    <option value="email">メール</option>
+                    <option value="tel">電話番号</option>
+                    <option value="select">セレクト</option>
+                    <option value="checkbox">チェックボックス</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] text-gray-500">プレースホルダー</label>
+                  <input type="text" value={field.placeholder || ''} onChange={(e) => updateField(i, { placeholder: e.target.value })} className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" placeholder="入力例を表示..." />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-xs text-gray-600">
+                    <input type="checkbox" checked={field.required} onChange={(e) => updateField(i, { required: e.target.checked })} />
+                    必須
+                  </label>
+                </div>
+                {field.fieldType === 'select' && (
+                  <div>
+                    <label className="text-[10px] text-gray-500">選択肢（改行区切り）</label>
+                    <textarea
+                      value={(field.options || []).join('\n')}
+                      onChange={(e) => updateField(i, { options: e.target.value.split('\n').filter(Boolean) })}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white resize-y"
+                      rows={3}
+                      placeholder="選択肢1&#10;選択肢2&#10;選択肢3"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </>
   );

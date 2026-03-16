@@ -17,10 +17,10 @@ export default function Canvas() {
   };
 
   return (
-    <div className="flex-1 bg-gray-100 overflow-auto flex flex-col items-center py-6 px-4">
+    <div className="flex-1 overflow-auto flex flex-col items-center py-6 px-4" style={{ backgroundColor: '#d1d5db' }}>
       {/* Device label */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="text-xs text-gray-400 font-medium">
+        <span className="text-xs font-medium" style={{ color: '#6b7280' }}>
           {device.label} — {device.width} x {device.height}
         </span>
       </div>
@@ -39,34 +39,19 @@ export default function Canvas() {
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: '#f9fafb',
-            border: '1px solid #e5e7eb',
+            backgroundColor: '#f3f4f6',
+            border: '1px solid #9ca3af',
             borderRadius: '8px',
             overflow: 'hidden',
             position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          {/* Mock page background */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundColor: '#ffffff',
-              opacity: 0.5,
-            }}
+          <PopupRenderer
+            config={state.popup}
+            previewDevice={state.previewDevice}
+            selectedElementId={state.selectedElementId ?? undefined}
+            onSelect={handleSelect}
           />
-
-          {/* Popup */}
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: '100%', maxHeight: '100%', overflow: 'auto' }}>
-            <PopupRenderer
-              config={state.popup}
-              selectedElementId={state.selectedElementId ?? undefined}
-              onSelect={handleSelect}
-            />
-          </div>
         </div>
       </div>
     </div>
