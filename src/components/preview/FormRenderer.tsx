@@ -84,7 +84,7 @@ export default function FormRenderer({ element }: FormRendererProps) {
               onBlur={() => setFocusedField(null)}
             >
               <option value="">{field.placeholder || '選択してください'}</option>
-              {field.options?.map((opt, i) => (
+              {field.options?.filter(Boolean).map((opt, i) => (
                 <option key={i} value={opt}>{opt}</option>
               ))}
             </select>

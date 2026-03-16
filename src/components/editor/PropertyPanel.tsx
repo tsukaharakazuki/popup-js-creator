@@ -696,7 +696,7 @@ function FormFields({ element: el, update }: { element: FormElement; update: (u:
                     <label className="text-[10px] text-gray-500">選択肢（改行区切り）</label>
                     <textarea
                       value={(field.options || []).join('\n')}
-                      onChange={(e) => updateField(i, { options: e.target.value.split('\n').filter(Boolean) })}
+                      onChange={(e) => updateField(i, { options: e.target.value.split('\n') })}
                       className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white resize-y"
                       rows={3}
                       placeholder="選択肢1&#10;選択肢2&#10;選択肢3"

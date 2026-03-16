@@ -201,7 +201,7 @@ ${indent}})();`);
         if (field.fieldType === 'select') {
           lines.push(`${indent}var ${fVar} = document.createElement('select');`);
           lines.push(`${indent}${fVar}.name = ${JSON.stringify(field.name)};`);
-          (field.options || []).forEach((opt) => {
+          (field.options || []).filter(Boolean).forEach((opt) => {
             lines.push(`${indent}var opt = document.createElement('option');`);
             lines.push(`${indent}opt.value = ${JSON.stringify(opt)};`);
             lines.push(`${indent}opt.textContent = ${JSON.stringify(opt)};`);
