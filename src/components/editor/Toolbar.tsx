@@ -61,20 +61,23 @@ export default function Toolbar() {
       <div className="w-px h-6 bg-gray-200 mx-1" />
 
       {/* Device Switcher */}
-      {devices.map(({ device, icon: Icon, label }) => (
-        <button
-          key={device}
-          onClick={() => dispatch({ type: 'SET_PREVIEW_DEVICE', device })}
-          className={`p-1.5 rounded-md transition-colors ${
-            state.previewDevice === device
-              ? 'bg-blue-100 text-blue-600'
-              : 'text-gray-500 hover:bg-gray-100'
-          }`}
-          title={label}
-        >
-          <Icon className="w-4 h-4" />
-        </button>
-      ))}
+      <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+        {devices.map(({ device, icon: Icon, label }) => (
+          <button
+            key={device}
+            onClick={() => dispatch({ type: 'SET_PREVIEW_DEVICE', device })}
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
+              state.previewDevice === device
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+            title={label}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
 
       <div className="w-px h-6 bg-gray-200 mx-1" />
 
