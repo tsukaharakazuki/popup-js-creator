@@ -139,35 +139,75 @@ export default function GtmSettingsPage() {
               <div>
                 <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
                   <span className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full shrink-0">3</span>
-                  OAuth 同意画面を設定
+                  OAuth 同意画面を設定（Google Auth platform）
                 </h3>
+                <p className="ml-8 mb-2 text-xs text-gray-500">
+                  ※ Google Cloud Console の UI は更新されています。以下は現在の画面構成に基づいた手順です。
+                </p>
                 <ol className="list-none space-y-1.5 ml-8">
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">1.</span>
-                    <span>左メニュー <strong>「APIとサービス」</strong> → <strong>「OAuth 同意画面」</strong> をクリック</span>
+                    <span>左上のハンバーガーメニュー <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">☰</kbd> をクリックし、メニューから <strong>「Google Auth platform」</strong> を探してクリック</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">2.</span>
-                    <span>User Type で <strong>「外部」</strong> を選択 → <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">作成</kbd></span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-gray-400 shrink-0">3.</span>
-                    <span>アプリ情報を入力：</span>
-                  </li>
-                  <li className="ml-6">
-                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600">
-                      <li><strong>アプリ名</strong>：任意（例：「Popup Creator」）</li>
-                      <li><strong>ユーザーサポートメール</strong>：自分のメールアドレスを選択</li>
-                      <li><strong>デベロッパーの連絡先</strong>：同じメールアドレスを入力</li>
-                    </ul>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-gray-400 shrink-0">4.</span>
-                    <span>他は空欄のままで <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">保存して次へ</kbd> を繰り返し、最後まで進みます</span>
+                    <span>初めての場合は <kbd className="px-1.5 py-0.5 bg-blue-600 text-white border-0 rounded text-xs font-mono">GET STARTED</kbd>（開始）ボタンが表示されるのでクリック</span>
                   </li>
                 </ol>
-                <div className="ml-8 mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-                  ⚠ 「外部」を選ぶと「テスト」ステータスになります。自分のGoogleアカウントでは問題なく使えますが、他の人が使う場合は「テストユーザー」にメールアドレスの追加が必要です。
+
+                <div className="ml-8 mt-3 mb-2">
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">ウィザード形式で4つのステップを順番に入力します：</p>
+                </div>
+
+                <ol className="list-none space-y-1.5 ml-8">
+                  <li className="flex gap-2">
+                    <span className="text-blue-500 shrink-0 font-bold text-xs">Step 1</span>
+                    <span><strong>App Information</strong>（アプリ情報）</span>
+                  </li>
+                  <li className="ml-12">
+                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600">
+                      <li><strong>App name</strong>（アプリ名）：任意の名前（例：「Popup Creator」）</li>
+                      <li><strong>User support email</strong>（ユーザーサポートメール）：自分のメールアドレスをプルダウンから選択</li>
+                    </ul>
+                    <p className="text-xs text-gray-500 mt-1">→ <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">Next</kbd>（次へ）をクリック</p>
+                  </li>
+
+                  <li className="flex gap-2 mt-2">
+                    <span className="text-blue-500 shrink-0 font-bold text-xs">Step 2</span>
+                    <span><strong>Audience</strong>（対象ユーザー）</span>
+                  </li>
+                  <li className="ml-12">
+                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600">
+                      <li>User Type で <strong>「External」（外部）</strong> を選択</li>
+                    </ul>
+                    <p className="text-xs text-gray-500 mt-1">→ <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">Next</kbd>（次へ）をクリック</p>
+                  </li>
+
+                  <li className="flex gap-2 mt-2">
+                    <span className="text-blue-500 shrink-0 font-bold text-xs">Step 3</span>
+                    <span><strong>Contact Information</strong>（連絡先情報）</span>
+                  </li>
+                  <li className="ml-12">
+                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600">
+                      <li><strong>Email addresses</strong>：自分のメールアドレスを入力</li>
+                    </ul>
+                    <p className="text-xs text-gray-500 mt-1">→ <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">Next</kbd>（次へ）をクリック</p>
+                  </li>
+
+                  <li className="flex gap-2 mt-2">
+                    <span className="text-blue-500 shrink-0 font-bold text-xs">Step 4</span>
+                    <span><strong>Finish</strong>（完了）</span>
+                  </li>
+                  <li className="ml-12">
+                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600">
+                      <li><strong>「I agree to the Google API Services: User Data Policy」</strong> にチェック</li>
+                    </ul>
+                    <p className="text-xs text-gray-500 mt-1">→ <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">Continue</kbd>（続行）→ <kbd className="px-1.5 py-0.5 bg-blue-600 text-white border-0 rounded text-xs font-mono">Create</kbd>（作成）をクリック</p>
+                  </li>
+                </ol>
+
+                <div className="ml-8 mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
+                  ⚠ 「External」（外部）を選ぶと「Testing」（テスト）ステータスになります。自分のGoogleアカウントでは問題なく使えますが、他の人が使う場合は左メニューの <strong>「Audience」</strong> ページで <kbd className="px-1 py-0.5 bg-white border border-gray-300 rounded font-mono">Add users</kbd> からメールアドレスの追加が必要です。
                 </div>
               </div>
 
@@ -180,23 +220,23 @@ export default function GtmSettingsPage() {
                 <ol className="list-none space-y-1.5 ml-8">
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">1.</span>
-                    <span>左メニュー <strong>「APIとサービス」</strong> → <strong>「認証情報」</strong> をクリック</span>
+                    <span>左メニューの <strong>「Google Auth platform」</strong> → <strong>「Clients」</strong>（クライアント）をクリック</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">2.</span>
-                    <span>上部の <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">＋ 認証情報を作成</kbd> → <strong>「OAuth クライアント ID」</strong> を選択</span>
+                    <span>上部の <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">＋ CREATE CLIENT</kbd>（クライアントを作成）をクリック</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">3.</span>
-                    <span>アプリケーションの種類で <strong>「ウェブ アプリケーション」</strong> を選択</span>
+                    <span>Application type（アプリケーションの種類）で <strong>「Web application」（ウェブ アプリケーション）</strong> を選択</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">4.</span>
-                    <span>名前を入力（例：「Popup Creator Web」）</span>
+                    <span>Name（名前）を入力（例：「Popup Creator Web」）</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">5.</span>
-                    <span><strong>「承認済みの JavaScript オリジン」</strong> セクションで <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">＋ URIを追加</kbd> をクリック</span>
+                    <span><strong>「Authorized JavaScript origins」（承認済みの JavaScript オリジン）</strong> セクションで <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">＋ ADD URI</kbd>（URIを追加）をクリック</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">6.</span>
@@ -208,13 +248,19 @@ export default function GtmSettingsPage() {
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">7.</span>
-                    <span><kbd className="px-1.5 py-0.5 bg-blue-600 text-white border-0 rounded text-xs font-mono">作成</kbd> ボタンをクリック</span>
+                    <span><kbd className="px-1.5 py-0.5 bg-blue-600 text-white border-0 rounded text-xs font-mono">CREATE</kbd>（作成）ボタンをクリック</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-gray-400 shrink-0">8.</span>
-                    <span>ダイアログに表示される <strong>「クライアント ID」</strong>（<code className="bg-gray-200 px-1 rounded text-xs">xxxx.apps.googleusercontent.com</code> 形式）をコピー</span>
+                    <span>ダイアログに表示される <strong>「Client ID」（クライアント ID）</strong>をコピー</span>
+                  </li>
+                  <li className="ml-6">
+                    <p className="text-xs text-gray-500">形式：<code className="bg-gray-200 px-1 rounded">xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com</code></p>
                   </li>
                 </ol>
+                <div className="ml-8 mt-2 p-2 bg-gray-100 border border-gray-200 rounded text-xs text-gray-600">
+                  💡 後からコピーしたい場合は、<strong>「Google Auth platform」→「Clients」</strong> 一覧からクライアント名をクリックし、詳細ページの「Client ID」欄からコピーできます。
+                </div>
               </div>
 
               {/* Step 5 */}
