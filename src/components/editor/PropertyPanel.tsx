@@ -172,6 +172,27 @@ function ContainerTab() {
       <FieldRow label="角丸">
         <SmallInput type="number" value={c.borderRadius} onChange={(v) => updateContainer({ borderRadius: parseInt(v) || 0 })} />
       </FieldRow>
+      <FieldRow label="外枠">
+        <select
+          value={c.borderStyle}
+          onChange={(e) => updateContainer({ borderStyle: e.target.value as 'solid' | 'dashed' | 'none' })}
+          className="w-full px-2 py-1 border border-gray-200 rounded text-xs"
+        >
+          <option value="none">なし</option>
+          <option value="solid">実線</option>
+          <option value="dashed">破線</option>
+        </select>
+      </FieldRow>
+      {c.borderStyle !== 'none' && (
+        <>
+          <FieldRow label="枠の太さ">
+            <SmallInput type="number" value={c.borderWidth} onChange={(v) => updateContainer({ borderWidth: parseInt(v) || 0 })} />
+          </FieldRow>
+          <FieldRow label="枠の色">
+            <ColorInput value={c.borderColor} onChange={(v) => updateContainer({ borderColor: v })} />
+          </FieldRow>
+        </>
+      )}
       <FieldRow label="影">
         <label className="flex items-center gap-2 text-xs">
           <input
