@@ -1,4 +1,5 @@
-import type { PopupConfig, PopupPosition } from '../../types/popup';
+import { useState, useEffect } from 'react';
+import type { PopupConfig, PopupPosition, AnimationConfig } from '../../types/popup';
 import type { PreviewDevice } from '../../types/editor';
 import ElementRenderer from './ElementRenderer';
 
@@ -7,6 +8,8 @@ interface PopupRendererProps {
   previewDevice?: PreviewDevice;
   selectedElementId?: string;
   onSelect?: (id: string) => void;
+  animationPhase?: 'idle' | 'entrance' | 'exit';
+  onAnimationEnd?: () => void;
 }
 
 function getResponsiveValue<T>(rv: { mobile: T; tablet?: T; desktop: T }, device: PreviewDevice): T {
@@ -27,8 +30,93 @@ const positionAlignMap: Record<PopupPosition, { alignItems: string; justifyConte
   'bottom-right':  { alignItems: 'flex-end',   justifyContent: 'flex-end' },
 };
 
-export default function PopupRenderer({ config, previewDevice = 'desktop', selectedElementId, onSelect }: PopupRendererProps) {
-  const { container, closeButton, elements } = config;
+function getEntranceKeyframes(type: AnimationConfig['entrance']): [React.CSSProperties, React.CSSProperties] {
+  switch (type) {
+    case 'fade-in':
+      return [{ opacity: 0 }, { opacity: 1 }];
+    case 'slide-up':
+      return [{ opacity: 0, transform: 'translateY(40px)' }, { opacity: 1, transform: 'translateY(0)' }];
+    case 'slide-down':
+      return [{ opacity: 0, transform: 'translateY(-40px)' }, { opacity: 1, transform: 'translateY(0)' }];
+    case 'slide-left':
+      return [{ opacity: 0, transform: 'translateX(40px)' }, { opacity: 1, transform: 'translateX(0)' }];
+    case 'slide-right':
+      return [{ opacity: 0, transform: 'translateX(-40px)' }, { opacity: 1, transform: 'translateX(0)' }];
+    case 'zoom-in':
+      return [{ opacity: 0, transform: 'scale(0.7)' }, { opacity: 1, transform: 'scale(1)' }];
+    default:
+      return [{}, {}];
+  }
+}
+
+function getExitKeyframes(type: AnimationConfig['exit']): [React.CSSProperties, React.CSSProperties] {
+  switch (type) {
+    case 'fade-out':
+      return [{ opacity: 1 }, { opacity: 0 }];
+    case 'slide-up':
+      return [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-40px)' }];
+    case 'slide-down':
+      return [{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(40px)' }];
+    case 'zoom-out':
+      return [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.7)' }];
+    default:
+      return [{}, {}];
+  }
+}
+
+export default function PopupRenderer({
+  config,
+  previewDevice = 'desktop',
+  selectedElementId,
+  onSelect,
+  animationPhase = 'idle',
+  onAnimationEnd,
+}: PopupRendererProps) {
+  const { container, closeButton, overlay, elements, animation } = config;
+  const [animStyle, setAnimStyle] = useState<React.CSSProperties>({});
+  const [overlayAnimStyle, setOverlayAnimStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (animationPhase === 'idle') {
+      setAnimStyle({});
+      setOverlayAnimStyle({});
+      return;
+    }
+
+    const duration = animation.duration;
+
+    if (animationPhase === 'entrance') {
+      const [from, to] = getEntranceKeyframes(animation.entrance);
+      // Start at "from"
+      setAnimStyle({ ...from, transition: 'none' });
+      setOverlayAnimStyle({ opacity: 0, transition: 'none' });
+
+      // Force reflow then animate to "to"
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setAnimStyle({ ...to, transition: `all ${duration}ms ease-out` });
+          setOverlayAnimStyle({ opacity: 1, transition: `opacity ${duration}ms ease-out` });
+        });
+      });
+    } else if (animationPhase === 'exit') {
+      const [from, to] = getExitKeyframes(animation.exit);
+      setAnimStyle({ ...from, transition: 'none' });
+      setOverlayAnimStyle({ opacity: 1, transition: 'none' });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setAnimStyle({ ...to, transition: `all ${duration}ms ease-in` });
+          setOverlayAnimStyle({ opacity: 0, transition: `opacity ${duration}ms ease-in` });
+        });
+      });
+    }
+
+    const timer = setTimeout(() => {
+      onAnimationEnd?.();
+    }, duration + 50);
+
+    return () => clearTimeout(timer);
+  }, [animationPhase, animation.entrance, animation.exit, animation.duration, onAnimationEnd]);
 
   const handleSelect = onSelect || (() => {});
 
@@ -65,9 +153,22 @@ export default function PopupRenderer({ config, previewDevice = 'desktop', selec
     overflow: 'auto',
     boxSizing: 'border-box',
     fontFamily: 'sans-serif',
+    ...animStyle,
   };
 
   const posAlign = positionAlignMap[container.position] || positionAlignMap['center'];
+
+  const showOverlay = overlay.enabled && animationPhase !== 'idle';
+
+  const overlayBgStyle: React.CSSProperties = showOverlay
+    ? {
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: overlay.color,
+        zIndex: 0,
+        ...overlayAnimStyle,
+      }
+    : {};
 
   const overlayStyle: React.CSSProperties = {
     position: 'absolute',
@@ -77,6 +178,7 @@ export default function PopupRenderer({ config, previewDevice = 'desktop', selec
     justifyContent: posAlign.justifyContent,
     padding: '16px',
     boxSizing: 'border-box',
+    zIndex: 1,
   };
 
   const closePosition = closeButton.position === 'top-right'
@@ -102,43 +204,46 @@ export default function PopupRenderer({ config, previewDevice = 'desktop', selec
   };
 
   return (
-    <div style={overlayStyle}>
-      <div
-        style={containerStyle}
-        onClick={() => handleSelect('')}
-      >
-        {closeButton.enabled && (
-          <button
-            type="button"
-            style={closeStyle}
-            onClick={(e) => e.stopPropagation()}
-            title="Close"
-          >
-            &#10005;
-          </button>
-        )}
-        {elements.map((el) => (
-          <ElementRenderer
-            key={el.id}
-            element={el}
-            selected={el.id === (selectedElementId ?? '')}
-            onSelect={handleSelect}
-            parentSelectedId={selectedElementId}
-          />
-        ))}
-        {elements.length === 0 && (
-          <div
-            style={{
-              padding: '40px 20px',
-              textAlign: 'center',
-              color: '#9ca3af',
-              fontSize: '14px',
-            }}
-          >
-            要素を追加してください
-          </div>
-        )}
+    <>
+      {showOverlay && <div style={overlayBgStyle} />}
+      <div style={overlayStyle}>
+        <div
+          style={containerStyle}
+          onClick={() => handleSelect('')}
+        >
+          {closeButton.enabled && (
+            <button
+              type="button"
+              style={closeStyle}
+              onClick={(e) => e.stopPropagation()}
+              title="Close"
+            >
+              &#10005;
+            </button>
+          )}
+          {elements.map((el) => (
+            <ElementRenderer
+              key={el.id}
+              element={el}
+              selected={el.id === (selectedElementId ?? '')}
+              onSelect={handleSelect}
+              parentSelectedId={selectedElementId}
+            />
+          ))}
+          {elements.length === 0 && (
+            <div
+              style={{
+                padding: '40px 20px',
+                textAlign: 'center',
+                color: '#9ca3af',
+                fontSize: '14px',
+              }}
+            >
+              要素を追加してください
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

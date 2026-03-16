@@ -10,6 +10,7 @@ export interface EditorState {
   historyIndex: number;
   previewDevice: PreviewDevice;
   zoom: number;
+  animationPreview: 'idle' | 'entrance' | 'exit';
 }
 
 export type EditorAction =
@@ -29,4 +30,6 @@ export type EditorAction =
   | { type: 'UPDATE_DISPLAY_RULES'; updates: Partial<PopupConfig['displayRules']> }
   | { type: 'UPDATE_CLOSE_BUTTON'; updates: Partial<PopupConfig['closeButton']> }
   | { type: 'UPDATE_OVERLAY'; updates: Partial<PopupConfig['overlay']> }
-  | { type: 'UPDATE_ANIMATION'; updates: Partial<PopupConfig['animation']> };
+  | { type: 'UPDATE_ANIMATION'; updates: Partial<PopupConfig['animation']> }
+  | { type: 'PLAY_ANIMATION'; phase: 'entrance' | 'exit' }
+  | { type: 'STOP_ANIMATION' };

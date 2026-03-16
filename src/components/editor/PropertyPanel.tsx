@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Play } from 'lucide-react';
 import { useEditor } from '../../context/EditorContext';
 import { createImageElement } from '../../utils/elementFactory';
 import type {
@@ -827,6 +827,27 @@ function DisplayTab() {
       <FieldRow label="時間 (ms)">
         <SmallInput type="number" value={anim.duration} onChange={(v) => updateAN({ duration: parseInt(v) || 300 })} />
       </FieldRow>
+
+      <div className="mt-3 flex gap-2">
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'PLAY_ANIMATION', phase: 'entrance' })}
+          disabled={anim.entrance === 'none' || state.animationPreview !== 'idle'}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <Play className="w-3 h-3" />
+          入場プレビュー
+        </button>
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'PLAY_ANIMATION', phase: 'exit' })}
+          disabled={anim.exit === 'none' || state.animationPreview !== 'idle'}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <Play className="w-3 h-3" />
+          退場プレビュー
+        </button>
+      </div>
     </div>
   );
 }

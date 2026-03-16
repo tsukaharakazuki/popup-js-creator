@@ -108,6 +108,7 @@ const initialState: EditorState = {
   historyIndex: -1,
   previewDevice: 'desktop',
   zoom: 100,
+  animationPreview: 'idle',
 };
 
 function pushHistory(state: EditorState): EditorState {
@@ -281,6 +282,12 @@ function editorReducer(state: EditorState, action: EditorAction): EditorState {
       };
     }
 
+    case 'PLAY_ANIMATION':
+      return { ...state, animationPreview: action.phase };
+
+    case 'STOP_ANIMATION':
+      return { ...state, animationPreview: 'idle' };
+
     default:
       return state;
   }
@@ -302,6 +309,7 @@ export function EditorProvider({ children, initialPopup }: { children: ReactNode
     popup: initialPopup ?? createDefaultPopupConfig(),
     history: [initialPopup ?? createDefaultPopupConfig()],
     historyIndex: 0,
+    animationPreview: 'idle',
   });
 
   const selectedElement = state.selectedElementId

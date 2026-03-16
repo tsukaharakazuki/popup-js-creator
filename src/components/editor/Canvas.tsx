@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useEditor } from '../../context/EditorContext';
 import PopupRenderer from '../preview/PopupRenderer';
 
@@ -15,6 +16,10 @@ export default function Canvas() {
   const handleSelect = (id: string) => {
     dispatch({ type: 'SELECT_ELEMENT', id: id || null });
   };
+
+  const handleAnimationEnd = useCallback(() => {
+    dispatch({ type: 'STOP_ANIMATION' });
+  }, [dispatch]);
 
   return (
     <div className="flex-1 overflow-auto flex flex-col items-center py-6 px-4" style={{ backgroundColor: '#d1d5db' }}>
@@ -51,6 +56,8 @@ export default function Canvas() {
             previewDevice={state.previewDevice}
             selectedElementId={state.selectedElementId ?? undefined}
             onSelect={handleSelect}
+            animationPhase={state.animationPreview}
+            onAnimationEnd={handleAnimationEnd}
           />
         </div>
       </div>
