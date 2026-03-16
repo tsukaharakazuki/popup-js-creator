@@ -10,6 +10,7 @@ import { createElement } from '../../utils/elementFactory';
 import type { ElementType } from '../../types/popup';
 import type { PreviewDevice } from '../../types/editor';
 import CodeExportModal from './CodeExportModal';
+import GtmDeployButton from '../gtm/GtmDeployButton';
 
 const elementTypes: { type: ElementType; icon: typeof Type; label: string }[] = [
   { type: 'text', icon: Type, label: 'テキスト' },
@@ -113,6 +114,9 @@ export default function Toolbar() {
         <FileCode className="w-4 h-4" />
         JS出力
       </button>
+
+      {/* GTM Deploy */}
+      <GtmDeployButton config={state.popup} />
 
       <div className="w-px h-6 bg-gray-200 mx-1" />
 

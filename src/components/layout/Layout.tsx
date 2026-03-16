@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Zap, Home, Code } from 'lucide-react';
+import { Zap, Home, Code, Settings } from 'lucide-react';
 
 export default function Layout() {
   const location = useLocation();
@@ -36,6 +36,15 @@ export default function Layout() {
               >
                 <Code className="w-4 h-4" />
                 コード出力
+              </Link>
+              <Link
+                to="/settings"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === '/settings' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                GTM設定
               </Link>
             </nav>
           </div>

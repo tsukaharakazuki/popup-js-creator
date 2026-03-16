@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { X, Copy, Check, Download, Minimize2, Maximize2 } from 'lucide-react';
 import type { PopupConfig } from '../../types/popup';
 import { generatePopupCode } from '../../utils/codeGenerator';
+import GtmDeployButton from '../gtm/GtmDeployButton';
 
 interface CodeExportModalProps {
   config: PopupConfig;
@@ -85,6 +86,7 @@ export default function CodeExportModal({ config, onClose }: CodeExportModalProp
             <Download className="w-3.5 h-3.5" />
             ダウンロード
           </button>
+          <GtmDeployButton config={config} />
           <div className="flex-1" />
           <button
             onClick={() => setMinified(!minified)}
