@@ -174,12 +174,13 @@ ${indent}  var track = ${varName}_track;
 ${indent}  function goTo(n) {
 ${indent}    currentSlide = ((n % slideCount) + slideCount) % slideCount;
 ${indent}    track.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
-${indent}    var dots = ${varName}.querySelectorAll('.carousel-dot');
-${indent}    dots.forEach(function(d, i) { d.className = 'carousel-dot' + (i === currentSlide ? ' active' : ''); });
+${indent}    var allDots = ${varName}.querySelectorAll('.carousel-dot');
+${indent}    for (var di = 0; di < allDots.length; di++) { allDots[di].className = 'carousel-dot' + (di === currentSlide ? ' active' : ''); }
 ${indent}  }
 ${carousel.showArrows ? `${indent}  ${varName}_prev.addEventListener('click', function() { goTo(currentSlide - 1); });
 ${indent}  ${varName}_next.addEventListener('click', function() { goTo(currentSlide + 1); });` : ''}
-${carousel.showDots ? `${indent}  ${varName}_dots.querySelectorAll('.carousel-dot').forEach(function(d, i) { d.addEventListener('click', function() { goTo(i); }); });` : ''}
+${carousel.showDots ? `${indent}  var dotBtns = ${varName}_dots.querySelectorAll('.carousel-dot');
+${indent}  for (var dbi = 0; dbi < dotBtns.length; dbi++) { (function(idx) { dotBtns[idx].addEventListener('click', function() { goTo(idx); }); })(dbi); }` : ''}
 ${carousel.autoPlay ? `${indent}  setInterval(function() { goTo(currentSlide + 1); }, ${carousel.interval});` : ''}
 ${indent}})();`);
       break;
@@ -251,7 +252,8 @@ ${indent}})();`);
       lines.push(`${indent}    btn.textContent = val;`);
       lines.push(`${indent}    btn.addEventListener('click', function() {`);
       lines.push(`${indent}      ${varName}_selected = val;`);
-      lines.push(`${indent}      ${varName}_btns.querySelectorAll('.nps-btn').forEach(function(b) { b.className = 'nps-btn'; });`);
+      lines.push(`${indent}      var allNpsBtns = ${varName}_btns.querySelectorAll('.nps-btn');`)
+      lines.push(`${indent}      for (var ni = 0; ni < allNpsBtns.length; ni++) { allNpsBtns[ni].className = 'nps-btn'; }`);
       lines.push(`${indent}      btn.className = 'nps-btn selected';`);
       lines.push(`${indent}      ${varName}_submit.disabled = false;`);
       lines.push(`${indent}    });`);

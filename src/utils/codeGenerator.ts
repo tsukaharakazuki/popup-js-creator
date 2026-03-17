@@ -75,12 +75,13 @@ export function generatePopupCode(config: PopupConfig, minified = false): string
     });
 
     // Close action buttons
-    overlay.querySelectorAll('[data-popup-action="close"]').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
+    var closeBtns = overlay.querySelectorAll('[data-popup-action="close"]');
+    for (var ci = 0; ci < closeBtns.length; ci++) {
+      closeBtns[ci].addEventListener('click', function(e) {
         e.preventDefault();
         closePopup(overlay);
       });
-    });
+    }
   }
 
   // Trigger setup
@@ -152,14 +153,19 @@ function generateTriggerCode(config: PopupConfig, _prefix: string): string {
 }
 
 function minifyCode(code: string): string {
-  return code
-    .replace(/\/\/.*$/gm, '')
-    .replace(/\/\*[\s\S]*?\*\//g, '')
+  // Remove single-line comments but preserve // inside strings
+  const stripComments = code.replace(
+    /(["'])(?:(?!\1|\\).|\\.)*\1|\/\/.*$/gm,
+    (match) => match.startsWith('/') ? '' : match
+  );
+  // Remove block comments
+  const stripBlock = stripComments.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Collapse whitespace
+  return stripBlock
     .replace(/\n\s*\n/g, '\n')
     .replace(/^\s+/gm, '')
     .replace(/\s+$/gm, '')
-    .replace(/\n/g, ' ')
+    .replace(/\n/g, '')
     .replace(/\s{2,}/g, ' ')
-    .replace(/\s*([{}();,=+\-<>!&|])\s*/g, '$1')
     .trim();
 }
